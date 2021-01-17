@@ -54,8 +54,8 @@ offer_from_body(Id, Req) ->
 		{<<"description">>, Description}
 	], _ } = cowboy_req:read_urlencoded_body(Req),
 	#{
-		id => {Id, text},
-		name => {Name, text},
-		price => {list_to_float(binary_to_list(Price)), float},
-		description => {Description, text}
+		id => Id,
+		name => binary_to_list(Name),
+		price => list_to_float(binary_to_list(Price)),
+		description => binary_to_list(Description)
 	}.

@@ -7,11 +7,8 @@ response(Status, Body, Req) ->
     }, Body, Req).
 
 map_to_json({_, Content}) ->
-	Mapper = fun (Field, {Value, Type}, Acc) -> 
-		Json = case Type of 
-			text -> io_lib:format("\"~s\": \"~s\",", [Field, Value]);
-			float -> io_lib:format("\"~s\": ~p,", [Field, Value])
-		end,
+	Mapper = fun (Field, Value, Acc) -> 
+		Json = io_lib:format("\"~s\": ~p,", [Field, Value]),
 		lists:append([Json], Acc)
 	end,
 	OfferFields = maps:fold(Mapper, [], Content),

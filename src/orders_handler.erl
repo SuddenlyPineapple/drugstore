@@ -53,22 +53,22 @@ order_from_body(Id, Req) ->
 		{<<"quantity">>, QuantityRaw},
 		{<<"buyer">>, Buyer}
 	], _ } = cowboy_req:read_urlencoded_body(Req),
+	
 	Quantity = list_to_integer(binary_to_list(QuantityRaw)),
 	{ok, OfferPrice} = get_offer_price(binary_to_list(OfferId)),
 	#{
-		id => {Id, text},
-		offer_id => {OfferId, text},
-		quantity => {Quantity, float},
-		amount => {OfferPrice * Quantity, float},
-		buyer => {Buyer, text}
+		id => Id,
+		offer_id => binary_to_list(OfferId),
+		quantity => Quantity,
+		amount => OfferPrice * Quantity,
+		buyer => binary_to_list(Buyer)
 	}.
 
 get_offer_price(OfferId) ->
 	Offers = db(offers, fun() -> dets:lookup(records_db, OfferId) end),
-	erlang:display(Offers),
 	case Offers of
 		[{_, Data}] -> 
-			{ok, {Price, float}} = maps:find(price, Data),
+			{ok, Price} = maps:find(price, Data),
 			{ok, Price};
 		_ -> {error, 0.0}
 	end.
