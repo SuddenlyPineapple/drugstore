@@ -21,10 +21,10 @@ insert(Collection, Id, Record) ->
 	{200, Inserted} = find_by_id(Collection, Id),
 	Inserted.
 
-update(Collection, Id, Offer) ->
+update(Collection, Id, Record) ->
 	{200, _} = find_by_id(Collection, Id),
 	delete(Collection, Id),
-	insert(Collection, Id, Offer).
+	insert(Collection, Id, Record).
 
 delete(Collection, RecordId) ->
 	ok = db(Collection, fun () -> dets:delete(records_db, RecordId) end).
