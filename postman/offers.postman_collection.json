@@ -15,17 +15,17 @@
 					"urlencoded": [
 						{
 							"key": "name",
-							"value": "test2",
+							"value": "{{$randomLoremWords}}",
 							"type": "text"
 						},
 						{
 							"key": "price",
-							"value": "123",
+							"value": "{{$randomPrice}}",
 							"type": "text"
 						},
 						{
 							"key": "description",
-							"value": "opis",
+							"value": "{{$randomLoremParagraph}}",
 							"type": "text"
 						}
 					]

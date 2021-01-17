@@ -8,16 +8,7 @@ init(Req=#{method := <<"GET">>}, State) ->
 	Params = cowboy_req:parse_qs(Req),
 	{Status, Values} = case Params of 
 		[{<<"id">>, OfferId}] ->
-			RecordId1 = binary_to_list(OfferId),
-			Records = db(offers, fun() -> dets:lookup(records_db, RecordId1) end),
-			case Records of
-				[{RecordId2, Data}] ->
-					{200, offer_to_json({RecordId2, Data})};
-				[] ->
-					{404, io_lib:format("{\"not_found\": \"record ~s not found\"}", [RecordId1])};
-				_ ->
-					{500, io_lib:format("{\"extra_records\": \"extra records for ~s\"}", [RecordId1])}
-			end;
+			find_offer_by_id(binary_to_list(OfferId));
 		[] -> 
 			F = fun (Offer, Acc) -> Acc1 = [offer_to_json(Offer) | Acc], Acc1 end,
 			Items = db(offers, fun() -> dets:foldl(F, [], records_db) end),
@@ -31,17 +22,25 @@ init(Req=#{method := <<"GET">>}, State) ->
     Res = response(Status, Values, Req),
     {ok, Res, State};
 
-
-
 init(Req=#{method := <<"POST">>}, State) ->
-    {ok, [{<<"content">>, Content}], _} = cowboy_req:read_urlencoded_body(Req),
-    RecordId = generate_id(offers),
-	Action  = fun () -> 
-    	ok = dets:insert(records_db, {RecordId, Content}),
+	RecordId = generate_id(offers),
+    {ok, [
+		{<<"name">>, Name},
+		{<<"price">>, Price},
+		{<<"description">>, Description}
+	], _ } = cowboy_req:read_urlencoded_body(Req),
+	Offer = #{
+			id => {RecordId, text},
+			name => {Name, text},
+			price => {Price, float},
+			description => {Description, text}
+		},
+	ok = db(offers, fun () -> 
+    	ok = dets:insert(records_db, {RecordId, Offer}),
     	dets:sync(records_db)
-		end,
-	ok = db(offers, Action),
-	Res = response(201, RecordId, Req),
+	end),
+	{200, Inserted} = find_offer_by_id(RecordId),
+	Res = response(201, Inserted, Req),
     {ok, Res, State};
 
 init(Req=#{method := <<"PUT">>}, State) ->
@@ -60,7 +59,25 @@ init(Req, State) ->
     Res = cowboy_req:reply(405, #{}, Req),
     {ok, Res, State}.
 
-offer_to_json({Id, Content}) ->
-	lists:flatten(io_lib:format("{\"id\": \"~s\", \"record\": \"~s\"},", [Id, binary_to_list(Content)])).
+offer_to_json({_, Content}) ->
+	Mapper = fun (Field, {Value, Type}, Acc) -> 
+		Json = case Type of 
+			text -> io_lib:format("\"~s\": \"~s\",", [Field, Value]);
+			float -> io_lib:format("\"~s\": ~s,", [Field, Value])
+		end,
+		lists:append([Json], Acc)
+	end,
+	OfferFields = maps:fold(Mapper, [], Content),
+	lists:flatten(io_lib:format("{~s},", [OfferFields])).
 
 
+find_offer_by_id(OfferId) -> 
+	Offers = db(offers, fun() -> dets:lookup(records_db, OfferId) end),
+	case Offers of
+		[{OfferId2, Data}] ->
+			{200, offer_to_json({OfferId2, Data})};
+		[] ->
+			{404, io_lib:format("{\"not_found\": \"record ~s not found\"}", [OfferId])};
+		_ ->
+			{500, io_lib:format("{\"extra_records\": \"extra records for ~s\"}", [OfferId])}
+	end.
