@@ -33,7 +33,7 @@ Orders endpoints:
     "id": "text",
     "offerId": "text",
     "quantity": "int",
-    "ammount": "float",
+    "amount": "float",
     "buyer": "text"
 }
 ```
