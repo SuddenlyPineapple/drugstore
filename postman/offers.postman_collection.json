@@ -15,7 +15,7 @@
 					"urlencoded": [
 						{
 							"key": "name",
-							"value": "{{$randomLoremWords}}",
+							"value": "{{$randomLoremText}}",
 							"type": "text"
 						},
 						{
@@ -38,8 +38,50 @@
 					"port": "8080",
 					"path": [
 						"offers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "AKTUALIZACJA",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "{{$randomPrice}}",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "{{$randomLoremParagraph}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/offers?id=id_0008",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"offers"
 					],
 					"query": [
+						{
+							"key": "id",
+							"value": "id_0008"
+						},
 						{
 							"key": "title",
 							"value": "persu",
@@ -63,7 +105,7 @@
 					"urlencoded": []
 				},
 				"url": {
-					"raw": "localhost:8080/offers",
+					"raw": "localhost:8080/offers?id=id_0008",
 					"host": [
 						"localhost"
 					],
@@ -74,8 +116,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "id_0004",
-							"disabled": true
+							"value": "id_0008"
 						}
 					]
 				}

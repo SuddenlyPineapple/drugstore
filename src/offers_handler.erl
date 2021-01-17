@@ -23,41 +23,41 @@ init(Req=#{method := <<"GET">>}, State) ->
     {ok, Res, State};
 
 init(Req=#{method := <<"POST">>}, State) ->
-	RecordId = generate_id(offers),
-    {ok, [
-		{<<"name">>, Name},
-		{<<"price">>, Price},
-		{<<"description">>, Description}
-	], _ } = cowboy_req:read_urlencoded_body(Req),
-	Offer = #{
-			id => {RecordId, text},
-			name => {Name, text},
-			price => {Price, float},
-			description => {Description, text}
-		},
-	ok = db(offers, fun () -> 
-    	ok = dets:insert(records_db, {RecordId, Offer}),
-    	dets:sync(records_db)
-	end),
-	{200, Inserted} = find_offer_by_id(RecordId),
+	OfferId = generate_id(offers),
+	Offer = offer_from_body(OfferId, Req),
+	Inserted = insert_offer(OfferId, Offer),
 	Res = response(201, Inserted, Req),
     {ok, Res, State};
 
 init(Req=#{method := <<"PUT">>}, State) ->
-    Res = cowboy_req:reply(200, #{
-        <<"content-type">> => <<"text/plain">>
-    }, <<"Hello world!">>, Req),
+	[{<<"id">>, OfferIdRaw}] = cowboy_req:parse_qs(Req),
+	OfferId = binary_to_list(OfferIdRaw),
+	Offer = offer_from_body(OfferId, Req),
+	Updated = update_offer(OfferId, Offer),
+    Res = response(200, Updated, Req),
     {ok, Res, State};
 
 init(Req=#{method := <<"DELETE">>}, State) ->
 	[{<<"id">>, OfferId}] = cowboy_req:parse_qs(Req),
-    RecordId1 = binary_to_list(OfferId),
-	ok = db(offers, fun () -> dets:delete(records_db, RecordId1) end),
+	delete_offer_by_id(binary_to_list(OfferId)),
     {ok, response(204, <<"">>, Req), State};
 
 init(Req, State) ->
     Res = cowboy_req:reply(405, #{}, Req),
     {ok, Res, State}.
+
+offer_from_body(Id, Req) -> 
+	{ok, [
+		{<<"name">>, Name},
+		{<<"price">>, Price},
+		{<<"description">>, Description}
+	], _ } = cowboy_req:read_urlencoded_body(Req),
+	#{
+		id => {Id, text},
+		name => {Name, text},
+		price => {Price, float},
+		description => {Description, text}
+	}.
 
 find_offer_by_id(OfferId) -> 
 	Offers = db(offers, fun() -> dets:lookup(records_db, OfferId) end),
@@ -69,3 +69,19 @@ find_offer_by_id(OfferId) ->
 		_ ->
 			{500, io_lib:format("{\"extra_records\": \"extra records for ~s\"}", [OfferId])}
 	end.
+
+insert_offer(Id, Offer) -> 
+	ok = db(offers, fun () -> 
+    	ok = dets:insert(records_db, {Id, Offer}),
+    	dets:sync(records_db)
+	end),
+	{200, Inserted} = find_offer_by_id(Id),
+	Inserted.
+
+update_offer(Id, Offer) ->
+	{200, _} = find_offer_by_id(Id),
+	delete_offer_by_id(Id),
+	insert_offer(Id, Offer).
+
+delete_offer_by_id(OfferId) ->
+	ok = db(offers, fun () -> dets:delete(records_db, OfferId) end).
