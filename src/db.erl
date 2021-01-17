@@ -1,6 +1,6 @@
 -module(db).
 -import(util, [map_to_json/1]).
--export([find_by_id/2, insert/3, update/3, delete/2, generate_id/1, db/2]).
+-export([find_by_id/2, insert/3, update/3, delete/2, generate_id/1, db/2, exists/2]).
 
 find_by_id(Collection, RecordId) -> 
 	Records = db(Collection, fun() -> dets:lookup(records_db, RecordId) end),
@@ -12,6 +12,11 @@ find_by_id(Collection, RecordId) ->
 		_ ->
 			{500, io_lib:format("{\"extra_records\": \"extra records for ~s\"}", [RecordId])}
 	end.
+
+exists(Collection, RecordId) ->
+	{Status, _} = find_by_id(Collection, RecordId),
+	if Status == 200 -> ok;
+	true -> error end.
 
 insert(Collection, Id, Record) -> 
 	ok = db(Collection, fun () -> 
