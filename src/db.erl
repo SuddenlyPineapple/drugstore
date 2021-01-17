@@ -3,8 +3,8 @@
 -export([find_by_id/2, insert/3, update/3, delete/2, generate_id/1, db/2]).
 
 find_by_id(Collection, RecordId) -> 
-	Offers = db(Collection, fun() -> dets:lookup(records_db, RecordId) end),
-	case Offers of
+	Records = db(Collection, fun() -> dets:lookup(records_db, RecordId) end),
+	case Records of
 		[{RecordId2, Data}] ->
 			{200, map_to_json({RecordId2, Data})};
 		[] ->
