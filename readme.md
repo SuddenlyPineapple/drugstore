@@ -15,3 +15,25 @@ Orders endpoints:
 - POST /orders
 - GET /orders
 - GET /orders/<id>
+
+
+## Offer
+```json
+{
+    "id": "text",
+    "name": "text",
+    "price": "float",
+    "description": "text"
+}
+```
+
+## Order 
+```json
+{
+    "id": "text",
+    "offerId": "text",
+    "quantity": "int",
+    "ammount": "float",
+    "buyer": "text"
+}
+```
