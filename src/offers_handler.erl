@@ -56,6 +56,6 @@ offer_from_body(Id, Req) ->
 	#{
 		id => {Id, text},
 		name => {Name, text},
-		price => {Price, float},
+		price => {list_to_float(binary_to_list(Price)), float},
 		description => {Description, text}
 	}.

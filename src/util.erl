@@ -10,7 +10,7 @@ map_to_json({_, Content}) ->
 	Mapper = fun (Field, {Value, Type}, Acc) -> 
 		Json = case Type of 
 			text -> io_lib:format("\"~s\": \"~s\",", [Field, Value]);
-			float -> io_lib:format("\"~s\": ~s,", [Field, Value])
+			float -> io_lib:format("\"~s\": ~p,", [Field, Value])
 		end,
 		lists:append([Json], Acc)
 	end,
