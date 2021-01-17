@@ -1,0 +1,15 @@
+%% coding: utf-8
+[{release,"pw_release","1","10.2.4",
+          [{kernel,"6.2","./lib/kernel-6.2"},
+           {stdlib,"3.7.1","./lib/stdlib-3.7.1"},
+           {crypto,"4.4","./lib/crypto-4.4"},
+           {cowlib,"2.7.3","./lib/cowlib-2.7.3"},
+           {asn1,"5.0.8","./lib/asn1-5.0.8"},
+           {public_key,"1.6.4","./lib/public_key-1.6.4"},
+           {ssl,"9.1.2","./lib/ssl-9.1.2"},
+           {ranch,"1.7.1","./lib/ranch-1.7.1"},
+           {cowboy,"2.6.3","./lib/cowboy-2.6.3"},
+           {pw,"rolling","./lib/pw-rolling"},
+           {sasl,"3.3","./lib/sasl-3.3"},
+           {runtime_tools,"1.13.1","./lib/runtime_tools-1.13.1"}],
+          permanent}].
