@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "662a6810-007b-4bc7-a372-ee7b250f8620",
+		"name": "offers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "test2",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "opis",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/offers",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"offers"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "persu",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "localhost:8080/offers",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"offers"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "id_0004",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "localhost:8080/offers?id=id_0004",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"offers"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "id_0004"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
