@@ -1,5 +1,5 @@
 -module(offers_handler).
--import(util, [response/3, generate_id/1, db/2]).
+-import(util, [response/3, map_to_json/1, generate_id/1, db/2]).
 -behavior(cowboy_handler).
 
 -export([init/2]).
@@ -10,7 +10,7 @@ init(Req=#{method := <<"GET">>}, State) ->
 		[{<<"id">>, OfferId}] ->
 			find_offer_by_id(binary_to_list(OfferId));
 		[] -> 
-			F = fun (Offer, Acc) -> Acc1 = [offer_to_json(Offer) | Acc], Acc1 end,
+			F = fun (Offer, Acc) -> Acc1 = [map_to_json(Offer) | Acc], Acc1 end,
 			Items = db(offers, fun() -> dets:foldl(F, [], records_db) end),
 			Items1 = lists:sort(Items),
 			Body = "
@@ -59,23 +59,11 @@ init(Req, State) ->
     Res = cowboy_req:reply(405, #{}, Req),
     {ok, Res, State}.
 
-offer_to_json({_, Content}) ->
-	Mapper = fun (Field, {Value, Type}, Acc) -> 
-		Json = case Type of 
-			text -> io_lib:format("\"~s\": \"~s\",", [Field, Value]);
-			float -> io_lib:format("\"~s\": ~s,", [Field, Value])
-		end,
-		lists:append([Json], Acc)
-	end,
-	OfferFields = maps:fold(Mapper, [], Content),
-	lists:flatten(io_lib:format("{~s},", [OfferFields])).
-
-
 find_offer_by_id(OfferId) -> 
 	Offers = db(offers, fun() -> dets:lookup(records_db, OfferId) end),
 	case Offers of
 		[{OfferId2, Data}] ->
-			{200, offer_to_json({OfferId2, Data})};
+			{200, map_to_json({OfferId2, Data})};
 		[] ->
 			{404, io_lib:format("{\"not_found\": \"record ~s not found\"}", [OfferId])};
 		_ ->
